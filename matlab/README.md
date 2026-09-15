@@ -1,158 +1,119 @@
-# Guitar String Vibration Analysis
+# MATLAB Analysis Scripts
 
-A physics-based experimental project investigating guitar-string vibrations using smartphone accelerometer data and Fast Fourier Transform (FFT).
+This folder contains the MATLAB scripts used for processing and analyzing the smartphone accelerometer data collected from vibrating guitar strings.
 
-## Project Overview
+The scripts perform data processing, FFT-based frequency analysis, repeatability analysis, harmonic analysis, and visualization.
 
-This project investigates whether a smartphone accelerometer can be used to measure the fundamental frequencies of vibrating guitar strings.
+## Analysis Workflow
 
-Vibrations were recorded using the phyphox smartphone application. The recorded acceleration signals were processed in MATLAB, and Fast Fourier Transform (FFT) was used to transform the signals from the time domain to the frequency domain.
+The main analysis follows this general workflow:
 
-Four guitar strings were analyzed:
-
-- E2 — 82.41 Hz
-- A2 — 110.00 Hz
-- D3 — 146.83 Hz
-- G3 — 196.00 Hz
-
-Each string was measured five times to evaluate both the accuracy and repeatability of the measurements.
-
-## Experimental Setup
-
-A smartphone equipped with an accelerometer was used to record the mechanical vibrations produced by the guitar strings.
-
-The acceleration data were collected using phyphox and exported as Excel files. The analysis was performed using the X-axis acceleration signal from the `Raw data` sheet.
-
-For each string, five independent measurements were recorded.
-
-## Data Processing
-
-The analysis was performed using the following workflow:
-
-1. Read the acceleration data from the `Raw data` sheet.
-2. Calculate the sampling frequency from the recorded time values.
-3. Remove the DC component from the acceleration signal.
-4. Automatically detect the onset of the main vibration.
-5. Select a 4-second analysis segment.
-6. Apply a Hann window to reduce spectral leakage.
+1. Import acceleration data from Excel files.
+2. Estimate the sampling frequency.
+3. Remove the DC component from the signal.
+4. Detect the beginning of the main vibration.
+5. Select a fixed analysis segment.
+6. Apply a Hann window.
 7. Calculate the Fast Fourier Transform (FFT).
-8. Construct the one-sided amplitude spectrum.
-9. Identify the fundamental frequency near the theoretical value.
-10. Calculate absolute and relative frequency errors.
-11. Evaluate repeatability using the standard deviation and coefficient of variation (CV).
+8. Extract the dominant fundamental frequency.
+9. Calculate frequency errors.
+10. Evaluate repeatability using standard deviation and coefficient of variation.
+11. Analyze harmonic components for the E2 string.
+12. Generate figures and summary tables.
 
-## Fundamental Frequency Results
+## Main Scripts
 
-The measured fundamental frequencies were compared with the theoretical frequencies of the four analyzed guitar strings.
+### `main_analysis.m`
 
-![Frequency comparison](results/figures/frequency_comparison.png)
+Main script for running the fundamental-frequency analysis for the four analyzed strings:
 
-The measurements were generally close to the expected theoretical frequencies. The results demonstrate that smartphone accelerometer measurements can provide a useful estimate of guitar-string fundamental frequencies.
+- E2
+- A2
+- D3
+- G3
 
-## Frequency Error
+It calls `analyze_string.m` for each string.
 
-The relative frequency error was calculated for each string.
+### `analyze_string.m`
 
-![Frequency error](results/figures/frequency_error.png)
+Performs the main signal-processing and FFT analysis for five repeated measurements of a guitar string.
 
-The mean relative errors remained below approximately 1% for all four strings.
+It:
 
-## Repeatability
+- Reads the acceleration data
+- Calculates the sampling frequency
+- Removes the DC component
+- Detects vibration onset
+- Selects a 4-second segment
+- Applies a Hann window
+- Calculates the FFT
+- Identifies the fundamental frequency
+- Calculates absolute and relative errors
+- Calculates repeatability statistics
 
-Five repeated measurements were performed for each string.
+### `create_summary.m`
 
-![Repeatability](results/figures/repeatability.png)
+Combines the results from the four guitar strings into a summary table containing:
 
-The repeated measurements show a high degree of consistency, although the level of repeatability differs between strings.
-
-## Statistical Summary
-
-The main statistical results are provided in:
-
-`results/tables/summary_results.csv`
-
-The analysis includes:
-
+- Theoretical frequency
 - Mean measured frequency
 - Standard deviation
-- Coefficient of variation (CV)
+- Coefficient of variation
 - Mean absolute error
 - Mean relative error
 
-An important distinction is made between **accuracy** and **repeatability**.
+### `plot_frequency_comparison.m`
 
-Accuracy describes how close a measurement is to the theoretical frequency, while repeatability describes how close repeated measurements are to each other.
+Creates a comparison between theoretical and measured fundamental frequencies.
 
-For example, the D3 measurements showed very high repeatability but a systematic offset from the theoretical frequency. This indicates good repeatability but lower accuracy.
+### `plot_frequency_error.m`
 
-## Frequency-Domain Analysis
+Plots the relative frequency error for the analyzed strings.
 
-FFT analysis was used to identify the dominant frequency components of the measured acceleration signals.
+### `plot_repeatability.m`
 
-![FFT spectra](results/figures/fft_all_strings.png)
+Visualizes the repeated frequency measurements for each guitar string.
 
-The dominant peaks are located near the expected fundamental frequencies of the analyzed strings.
+### `plot_cv_comparison.m`
 
-## Harmonic Analysis
+Compares the coefficient of variation (CV) between the four strings.
 
-The E2 string was investigated further to examine its harmonic structure.
+### `plot_fft_spectrum.m`
 
-The fundamental frequency was detected near 82.5 Hz, while a second harmonic was detected near 165 Hz.
+Generates an FFT spectrum for an individual measurement to visualize the frequency components of the vibration signal.
 
-Since the second harmonic is approximately twice the fundamental frequency, this result is consistent with the expected harmonic structure of a vibrating string.
+### `plot_fft_all_strings.m`
 
-![E2 harmonic analysis](results/figures/e2_harmonic_analysis.png)
+Displays the frequency-domain spectra of the four analyzed guitar strings.
 
-The harmonic results for the five repeated E2 measurements are available in:
+### `analyze_harmonics.m`
 
-`results/tables/E2_harmonic_results.csv`
+Performs harmonic analysis for an E2 measurement and identifies the fundamental and second-harmonic components.
 
-## Harmonic Peak Reliability
+### `analyze_e2_harmonics.m`
 
-The second harmonic was detected in all five E2 measurements.
+Performs harmonic analysis for all five E2 measurements and compares the fundamental and second-harmonic frequencies and amplitudes.
 
-The peak-to-background ratio was used to evaluate how clearly the second-harmonic peak could be distinguished from the surrounding spectral background.
+### `check_harmonic_peaks.m`
 
-![Harmonic reliability](results/figures/e2_harmonic_reliability.png)
+Evaluates the reliability of the detected second-harmonic peak by comparing its amplitude with the surrounding spectral background.
 
-The peak-to-background ratio varied considerably between measurements, but the second harmonic remained distinguishable from the local spectral background in all five measurements.
+### `harmonic_reliability_summary.m`
 
-This indicates that the frequency location of the harmonic was more stable than its measured amplitude.
+Calculates summary statistics for the second-harmonic peak-to-background ratios.
 
-## Key Findings
+### `plot_harmonic_reliability.m`
 
-The main findings of the project are:
+Creates a plot showing the peak-to-background ratio of the second harmonic across the five E2 measurements.
 
-- Smartphone accelerometer data can be used to estimate guitar-string fundamental frequencies.
-- FFT provides a clear method for identifying the dominant frequency components.
-- Repeated measurements showed good frequency repeatability.
-- Measurement accuracy and repeatability are not necessarily the same.
-- The D3 string showed high repeatability but a systematic frequency offset.
-- The E2 measurements revealed a detectable second harmonic near twice the fundamental frequency.
-- Harmonic amplitude measurements were considerably more variable than frequency measurements.
-- Experimental conditions can strongly affect measured vibration amplitudes.
+## Input Data
 
-## Limitations
+The MATLAB scripts expect Excel files containing the accelerometer measurements.
 
-Several experimental limitations should be considered:
-
-- The measurements were performed using a smartphone accelerometer rather than a dedicated vibration sensor.
-- The sampling frequency limits the highest directly measurable frequency because of the Nyquist limit.
-- The measured amplitude depends strongly on the experimental setup and sensor placement.
-- Only four of the six standard guitar strings were analyzed because of the available sampling frequency.
-- The harmonic amplitude ratios showed substantial variation between repeated measurements.
-
-## Project Structure
+The expected naming format is:
 
 ```text
-Guitar-String-Vibration-Analysis/
-│
-├── README.md
-│
-├── matlab/
-│
-├── results/
-│   ├── figures/
-│   └── tables/
-│
-└── report/
+E2(1).xlsx
+E2(2).xlsx
+...
+E2(5).xlsx
